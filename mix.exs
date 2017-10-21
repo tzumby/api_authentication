@@ -8,18 +8,24 @@ defmodule ApiAuthentication.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      aliases: aliases(),
       deps: deps()
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
-    [
-      extra_applications: [:logger],
-      mod: {ApiAuthentication.Application, []}
-    ]
+    [applications: applications(Mix.env)]
   end
+
+  defp applications(:test), do: [:postgrex, :ecto, :logger]
+  defp applications(_), do: [:logger]
+
+  # Run "mix help compile.app" to learn about applications.
+  #def application do
+  #  [
+  #    extra_applications: [:logger],
+  #    mod: {ApiAuthentication.Application, []}
+  #  ]
+  #end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
@@ -35,8 +41,4 @@ defmodule ApiAuthentication.Mixfile do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
-
-  defp aliases do
-    ["test": ["ecto.create --quiet", "ecto.migrate", "test"]]
-  end
 end

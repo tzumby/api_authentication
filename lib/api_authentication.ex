@@ -36,10 +36,10 @@ defmodule ApiAuthentication do
 
   def generate_token(conn, user, opts) do
     repo = Keyword.fetch!(opts, :repo)
-    secret_id = SecureRandom.hex 8
-    secret = SecureRandom.urlsafe_base64 32
+    secret_id = generate_secret_id()
+    secret = generate_secret
     hashed_secret = hashpwsalt(secret)
-    token_params = %{secret_id: secret_id, hashed_secret: hashed_secret, expires: timestamp + 3600}
+    token_params = %{secret_id: secret_id, hashed_secret: hashed_secret, expires: expiration}
     changeset = Token.changeset(%Token{}, token_params)
     token = repo.insert(changeset)
     cond do
@@ -48,6 +48,18 @@ defmodule ApiAuthentication do
       true ->
         {:error, :not_found, conn}
     end
+  end
+
+  defp generate_secret_id do
+    SecureRandom.hex 8
+  end 
+
+  defp generate_secret do
+    SecureRandom.urlsafe_base64 32
+  end
+
+  defp expiration do
+    timestamp + 3600
   end
 
 	def login_by_email_and_password(conn, email, password, opts) do

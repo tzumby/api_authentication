@@ -7,6 +7,7 @@ defmodule ApiAuthentication.TestCase do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(ApiAuthentication.Test.Repo)
 
     Ecto.Adapters.SQL.Sandbox.mode(ApiAuthentication.Test.Repo, { :shared, self() })
+    :ok
   end
 end
 
