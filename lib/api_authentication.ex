@@ -15,23 +15,11 @@ defmodule ApiAuthentication do
   def call(conn, repo) do
     secret = get_secret_header(conn)
     secret_id = get_secret_id_header(conn)
-    auth_token =
-      case secret_id do
-        "" -> nil
-        _ -> repo.get_by(Token, secret_id: secret_id)
-      end
-    cond do
-      auth_token && auth_token.expires > timestamp && checkpw(secret, auth_token.hashed_secret) ->
-        conn
-        |> assign(:authenticated, true)
-      auth_token ->
-        conn
-        |> assign(:authenticated, false)
-      true ->
-        dummy_checkpw()
-        conn
-        |> assign(:authenticated, false)
-    end
+
+    conn
+    |> assign(:secret, secret)
+    |> assign(:secret_id, secret_id)
+    |> assign(:repo, repo)
   end
 
   def generate_token(conn, user, opts) do
@@ -78,15 +66,30 @@ defmodule ApiAuthentication do
 		end
 	end
 
+  def authenticate_request(conn, opts) do
+    repo = conn.assigns.repo
+    secret_id = conn.assigns.secret_id
+    secret = conn.assigns.secret
 
-	def authenticate_request(conn, _opts) do
-		if conn.assigns.authenticated do
-			conn
-		else
-			conn
-			|> send_resp(401, "Unauthenticated")
-			|> halt()
-		end
+    auth_token =
+      case secret_id do
+        "" -> nil
+        _ -> repo.get_by(Token, secret_id: secret_id)
+      end
+
+    cond do
+      auth_token && auth_token.expires > timestamp && checkpw(secret, auth_token.hashed_secret) ->
+        conn
+      auth_token ->
+        conn
+			    |> send_resp(401, "Unauthenticated")
+			    |> halt()
+      true ->
+        dummy_checkpw()
+        conn
+        |> send_resp(401, "Unauthenticated")
+			  |> halt()
+    end
 	end
 
   defp timestamp do
