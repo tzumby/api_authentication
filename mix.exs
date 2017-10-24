@@ -8,7 +8,12 @@ defmodule ApiAuthentication.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      description: "A module for API Token based authentication in Phoenix.",
+      docs: [
+        main: 'ApiAuthentication'
+      ],
+      deps: deps(),
+      package: package()
     ]
   end
 
@@ -16,16 +21,16 @@ defmodule ApiAuthentication.Mixfile do
     [applications: applications(Mix.env)]
   end
 
+  defp package do
+    [
+      maintainers: ["Razvan Draghici"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/tzumby/api_authentication"}
+    ]
+  end
+
   defp applications(:test), do: [:postgrex, :ecto, :logger]
   defp applications(_), do: [:logger]
-
-  # Run "mix help compile.app" to learn about applications.
-  #def application do
-  #  [
-  #    extra_applications: [:logger],
-  #    mod: {ApiAuthentication.Application, []}
-  #  ]
-  #end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
@@ -35,7 +40,9 @@ defmodule ApiAuthentication.Mixfile do
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 1.0"},
       {:secure_random, "~> 0.5"},
-      {:plug, "~> 1.4"}
+      {:plug, "~> 1.4"},
+      {:earmark, ">= 0.0.0", only: :dev},
+      {:ex_doc, "~> 0.10", only: :dev}
     ]
   end
 

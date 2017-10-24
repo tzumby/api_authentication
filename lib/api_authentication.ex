@@ -1,6 +1,6 @@
 defmodule ApiAuthentication do
   @moduledoc """
-  Documentation for ApiAuthentication.
+  Plug for token generation and authentication.
   """
 
   import Plug.Conn

@@ -1,4 +1,8 @@
 defmodule ApiAuthentication.Token do
+  @moduledoc """
+  Ecto model for the database stored tokens. 
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
