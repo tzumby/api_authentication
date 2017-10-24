@@ -25,10 +25,10 @@ defmodule ApiAuthentication do
   def generate_token(conn, user, opts) do
     repo = Keyword.fetch!(opts, :repo)
     secret_id = generate_secret_id()
-    secret = generate_secret
+    secret = generate_secret()
     hashed_secret = hashpwsalt(secret)
 
-    token_params = %{secret_id: secret_id, hashed_secret: hashed_secret, expires: expiration, user_id: user.id}
+    token_params = %{secret_id: secret_id, hashed_secret: hashed_secret, expires: expiration(), user_id: user.id}
     changeset = Token.changeset(%Token{}, token_params)
     token = repo.insert(changeset)
 
@@ -49,7 +49,7 @@ defmodule ApiAuthentication do
   end
 
   defp expiration do
-    timestamp + 3600
+    timestamp() + 3600
   end
 
   def login_by_email_and_password(conn, email, password, opts) do
@@ -68,7 +68,7 @@ defmodule ApiAuthentication do
 		end
 	end
 
-  def authenticate_request(conn, opts) do
+  def authenticate_request(conn, _opts) do
     repo = conn.assigns.repo
     secret_id = conn.assigns.secret_id
     secret = conn.assigns.secret
@@ -80,7 +80,7 @@ defmodule ApiAuthentication do
       end
 
     cond do
-      auth_token && auth_token.expires > timestamp && checkpw(secret, auth_token.hashed_secret) ->
+      auth_token && auth_token.expires > timestamp() && checkpw(secret, auth_token.hashed_secret) ->
         conn
         |> put_status(200)
       auth_token ->

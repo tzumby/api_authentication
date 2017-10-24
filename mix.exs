@@ -10,7 +10,7 @@ defmodule ApiAuthentication.Mixfile do
       start_permanent: Mix.env == :prod,
       description: "A module for API Token based authentication in Phoenix.",
       docs: [
-        main: 'ApiAuthentication'
+        main: "ApiAuthentication"
       ],
       deps: deps(),
       package: package()
