@@ -31,7 +31,7 @@ You will need to create a migration for the Tokens database table:
 defmodule TokenAuth.Repo.Migrations.CreateAuthenticationTokens do
   use Ecto.Migration
   def change do
-    create table(:authentication_tokens) do
+    create table(:tokens) do
       add :secret_id, :string
       add :hashed_secret, :string
       add :expires, :integer
@@ -39,8 +39,8 @@ defmodule TokenAuth.Repo.Migrations.CreateAuthenticationTokens do
       timestamps()
     end
 
-    create index(:authentication_tokens, [:user_id])
-    create unique_index(:authentication_tokens, [:secret_id])
+    create index(:tokens, [:user_id])
+    create unique_index(:tokens, [:secret_id])
   end
 end
 ```
