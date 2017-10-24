@@ -27,9 +27,11 @@ defmodule ApiAuthentication do
     secret_id = generate_secret_id()
     secret = generate_secret
     hashed_secret = hashpwsalt(secret)
-    token_params = %{secret_id: secret_id, hashed_secret: hashed_secret, expires: expiration}
+
+    token_params = %{secret_id: secret_id, hashed_secret: hashed_secret, expires: expiration, user_id: user.id}
     changeset = Token.changeset(%Token{}, token_params)
     token = repo.insert(changeset)
+
     cond do
       token ->
         {:ok, conn, %{secret: secret, secret_id: secret_id }}
@@ -50,11 +52,11 @@ defmodule ApiAuthentication do
     timestamp + 3600
   end
 
-	def login_by_email_and_password(conn, email, password, opts) do
-		repo = Keyword.fetch!(opts, :repo)
-		resource = Keyword.fetch!(opts, :resource)
+  def login_by_email_and_password(conn, email, password, opts) do
+    repo      = Keyword.fetch!(opts, :repo)
+		resource  = Keyword.fetch!(opts, :resource)
+    user      = repo.get_by(resource, email: email)
 
-		user = repo.get_by(resource, email: email)
 		cond do
 			user && checkpw(password, user.password_hash) ->
 				generate_token(conn, user, opts)
@@ -80,10 +82,11 @@ defmodule ApiAuthentication do
     cond do
       auth_token && auth_token.expires > timestamp && checkpw(secret, auth_token.hashed_secret) ->
         conn
+        |> put_status(200)
       auth_token ->
         conn
-			    |> send_resp(401, "Unauthenticated")
-			    |> halt()
+			  |> send_resp(401, "Unauthenticated")
+			  |> halt()
       true ->
         dummy_checkpw()
         conn

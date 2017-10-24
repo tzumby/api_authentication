@@ -2,7 +2,8 @@ use Mix.Config
 
 
 config :api_authentication, ApiAuthentication,
-  repo: ApiAuthentication.Test.Repo
+  repo: ApiAuthentication.Test.Repo,
+  resource_fk: :user_id
 
 config :api_authentication, ApiAuthentication.Test.Repo, [
   adapter: Ecto.Adapters.Postgres,

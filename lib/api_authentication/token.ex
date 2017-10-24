@@ -9,12 +9,13 @@ defmodule ApiAuthentication.Token do
   
 	@schema_name Keyword.get(config, :schema_name, "tokens")
   @expiration_time Keyword.get(config, :expiration_time, 3600)
-	@resource_fk Keyword.get(config, :resource_name, :user_id)
+  @resource_fk Keyword.get(config, :resource_fk, :user_id)
 
   schema @schema_name do
     field :hashed_secret, :string
     field :secret_id, :string
     field :expires, :integer
+
     field @resource_fk, :id
 
     timestamps()
@@ -22,7 +23,7 @@ defmodule ApiAuthentication.Token do
 
   def changeset(%Token{} = token, attrs) do
     token
-    |> cast(attrs, [:secret_id, :hashed_secret, :expires])
-    |> validate_required([:secret_id, :hashed_secret, :expires])
+    |> cast(attrs, [:secret_id, :hashed_secret, :expires, @resource_fk])
+    |> validate_required([:secret_id, :hashed_secret, :expires, @resource_fk])
   end
 end
